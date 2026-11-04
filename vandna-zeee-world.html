@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Vandna zeee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --gold: #ffcf85;
+    --rose: #f08fa3;
+    --card: rgba(255, 247, 249, 0.92);
+    --ink: #3b1c32;
+    --accent: #d94f78;
+    --paper: #fff3f5;
+    --paper-ink: #6d2848;
+    --tile: #f6dfe5;
+    --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --hand: 'Caveat', Georgia, serif;
+    --t: 0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --card: rgba(34, 22, 38, 0.9);
+      --ink: #fbe9ef;
+      --accent: #ff8fb0;
+      --paper: #2c1a2e;
+      --paper-ink: #ffd9e4;
+      --tile: #4a3049;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: var(--serif); color: var(--ink); background: #14121f; overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- sky: deep space that turns to sunrise as she explores ---------- */
+  .sky, .sky-warm, .stars, .sun { position: fixed; pointer-events: none; }
+  .sky { inset: 0; z-index: -5; background: radial-gradient(ellipse at 50% 40%, #2b2547 0%, #17142a 60%, #0d0b18 100%); }
+  .sky-warm { inset: 0; z-index: -4; opacity: calc(var(--t) * 0.9); background: linear-gradient(180deg, #f6a5b5 0%, #ffc59a 50%, #ffe9b8 100%); }
+  .stars {
+    inset: 0; z-index: -3; opacity: calc(1 - var(--t) * 0.9);
+    background-image:
+      radial-gradient(1.6px 1.6px at 8% 12%, #fff, transparent), radial-gradient(1.2px 1.2px at 22% 34%, #fff, transparent),
+      radial-gradient(1.8px 1.8px at 36% 8%, #fff, transparent), radial-gradient(1.2px 1.2px at 50% 22%, #fff, transparent),
+      radial-gradient(1.6px 1.6px at 64% 10%, #fff, transparent), radial-gradient(1.2px 1.2px at 78% 30%, #fff, transparent),
+      radial-gradient(1.8px 1.8px at 92% 16%, #fff, transparent), radial-gradient(1.2px 1.2px at 12% 60%, #fff, transparent),
+      radial-gradient(1.6px 1.6px at 40% 76%, #fff, transparent), radial-gradient(1.2px 1.2px at 70% 64%, #fff, transparent),
+      radial-gradient(1.6px 1.6px at 90% 78%, #fff, transparent), radial-gradient(1.2px 1.2px at 28% 90%, #fff, transparent),
+      radial-gradient(1.4px 1.4px at 56% 92%, #fff, transparent), radial-gradient(1.2px 1.2px at 84% 48%, #fff, transparent);
+    animation: twinkle 5s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { filter: brightness(0.7); } to { filter: brightness(1.35); } }
+  .sun {
+    z-index: -2; left: 50%; bottom: -180px; width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, #fff6d6 0%, #ffd98a 42%, rgba(255, 217, 138, 0) 70%);
+    transform: translate(-50%, calc(var(--t) * -230px)); opacity: var(--t);
+  }
+
+  /* ---------- gate ---------- */
+  .gate {
+    position: fixed; inset: 0; z-index: 60; padding: 28px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 38%, #2f2a4d 0%, #181530 62%, #0d0b18 100%);
+    transition: opacity 1.6s ease, visibility 1.6s;
+  }
+  .gate.gone { opacity: 0; visibility: hidden; }
+  .gate .big-cloud { width: 220px; height: 100px; border-radius: 60px; background: #0e0d18; filter: blur(10px); margin-bottom: 30px; animation: heavy 5s ease-in-out infinite; }
+  @keyframes heavy { 50% { transform: translateY(9px); } }
+  .gate h1 { font-size: clamp(2rem, 8.6vw, 2.9rem); line-height: 1.14; margin: 0 0 16px; color: #f6eff2; letter-spacing: -0.02em; max-width: 12em; }
+  .gate p { font-size: 1.15rem; line-height: 1.65; color: #d9d5de; max-width: 21em; margin: 0 0 32px; font-style: italic; }
+  .btn {
+    font-family: var(--serif); font-size: 1.1rem; font-weight: 700; border: 0; border-radius: 999px;
+    padding: 15px 36px; cursor: pointer; background: var(--gold); color: #3b1c32;
+    box-shadow: 0 8px 22px rgba(255, 207, 133, 0.35); transition: transform 0.2s ease;
+  }
+  .btn:hover { transform: scale(1.04); }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+  /* ---------- chrome ---------- */
+  .pill, .music { z-index: 30; position: fixed; top: calc(12px + env(safe-area-inset-top)); background: var(--card); color: var(--ink); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22); }
+  .pill { left: 14px; padding: 8px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; }
+  .music { right: 14px; top: calc(8px + env(safe-area-inset-top)); width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer; font-size: 1.2rem; }
+  .music.off { opacity: 0.55; text-decoration: line-through; }
+  .hint {
+    position: fixed; left: 50%; bottom: calc(26px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 20;
+    background: var(--card); color: var(--ink); padding: 10px 20px; border-radius: 999px; font-size: 0.95rem; font-weight: 600;
+    opacity: 0; transition: opacity 0.8s ease; pointer-events: none; white-space: nowrap;
+  }
+  .hint.show { opacity: 1; }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 45;
+    background: var(--gold); color: #3b1c32; padding: 12px 22px; border-radius: 999px; font-weight: 700; font-size: 0.98rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s ease; text-align: center; max-width: 90vw;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  }
+  .toast.show { opacity: 1; }
+
+  /* ---------- the world ---------- */
+  .wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; }
+  .world {
+    position: relative; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
+    opacity: 0; transform: scale(0.15); transition: opacity 2.2s ease, transform 2.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .world.in { opacity: 1; transform: scale(1); }
+  .world:active { cursor: grabbing; }
+  .world::before {
+    content: ''; position: absolute; inset: 4%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 170, 200, 0.28) 55%, rgba(120, 160, 255, 0.16) 68%, rgba(120, 160, 255, 0) 78%);
+    filter: blur(14px);
+  }
+  .world canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+
+  .pin {
+    position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; border: 0; padding: 0;
+    background: var(--card); font-size: 1.2rem; line-height: 40px; text-align: center; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; will-change: transform;
+  }
+  .pin.game { background: var(--gold); }
+  .pin::after {
+    content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--gold);
+    animation: ping 2.4s ease-out infinite; pointer-events: none;
+  }
+  @keyframes ping { 0% { transform: scale(0.85); opacity: 0.9; } 100% { transform: scale(1.35); opacity: 0; } }
+  .pin.seen { box-shadow: 0 0 0 3px var(--gold), 0 4px 14px rgba(0, 0, 0, 0.35); }
+  .pin.seen::after { display: none; }
+  .pin.seen::before {
+    content: '✓'; position: absolute; right: -4px; top: -4px; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 0.68rem; font-weight: 700; line-height: 17px; font-family: var(--serif); z-index: 1;
+  }
+  .pin.locked { filter: grayscale(1); }
+  .pin.locked::after { display: none; }
+  .pin .num {
+    position: absolute; left: -3px; bottom: -3px; width: 17px; height: 17px; border-radius: 50%; background: var(--accent);
+    color: #fff; font: 700 0.68rem/17px var(--serif); font-style: normal;
+  }
+  .tag {
+    position: absolute; left: 0; top: 0; padding: 5px 12px; border-radius: 999px; background: var(--card); color: var(--ink);
+    font-size: 0.8rem; font-weight: 700; white-space: nowrap; opacity: 0; pointer-events: none; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  }
+  .world.flat { transform: none; opacity: 1; width: min(94vw, 460px); height: auto; max-height: 80vh; overflow: auto; display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; padding: 70px 0 30px; }
+  .world.flat::before { display: none; }
+  .world.flat .pin { position: relative; opacity: 1; pointer-events: auto; transform: none !important; }
+  .world.flat .tag { display: none; }
+
+  /* ---------- a place (opened memory) ---------- */
+  .place {
+    position: fixed; inset: 0; z-index: 40; background: rgba(18, 10, 28, 0.74);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+  }
+  .place.open { opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0s; }
+  .stage { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 78px 18px 44px; -webkit-overflow-scrolling: touch; }
+  .stage > :first-child { margin-top: auto; }
+  .stage > :last-child { margin-bottom: auto; }
+  .stage > * { width: 100%; max-width: 500px; }
+  .close {
+    position: fixed; top: calc(10px + env(safe-area-inset-top)); right: 14px; z-index: 46; width: 46px; height: 46px; border-radius: 50%;
+    border: 0; cursor: pointer; background: var(--gold); color: #3b1c32; font-size: 1.3rem; font-family: var(--serif); font-weight: 700;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .ring { padding: 6px; border-radius: 28px; background: linear-gradient(150deg, var(--rose), var(--gold)); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45); }
+  .frame { display: block; width: 100%; max-height: 52vh; max-height: 52dvh; object-fit: contain; background: #1c1a22; border-radius: 22px; }
+  .frame.tall { max-height: 68vh; max-height: 68dvh; }
+  img.frame { height: auto; }
+  .words {
+    margin: 18px 0 0; padding: 16px 18px; background: var(--card); color: var(--ink); border-radius: 20px;
+    font-size: 1.04rem; line-height: 1.78; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+  .words.short { font-size: 1.1rem; }
+  .paper {
+    background-color: var(--paper); color: var(--paper-ink); padding: 30px 24px 18px; border-radius: 6px 6px 20px 20px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4); font-family: var(--hand); font-size: 1.42rem; line-height: 1.6; font-weight: 500;
+  }
+  .paper p { margin: 0 0 1.1em; overflow-wrap: break-word; }
+  .paper p.shout { font-weight: 600; }
+  .finale-text {
+    margin: 22px 0 0; text-align: center; background: var(--card); color: var(--ink); padding: 22px 18px; border-radius: 24px;
+    font-size: clamp(1.7rem, 7vw, 2.4rem); line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ---------- games ---------- */
+  #games { display: none; }
+  .game { background: var(--card); color: var(--ink); border-radius: 28px; padding: 22px 18px 20px; text-align: center; box-shadow: 0 14px 38px rgba(0, 0, 0, 0.4); }
+  .game h3 { margin: 0 0 14px; font-size: 1.5rem; letter-spacing: -0.01em; }
+  .status { min-height: 1.6em; margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+  .mini { margin-top: 12px; border: 0; border-radius: 999px; padding: 10px 22px; cursor: pointer; font-family: var(--serif); font-weight: 700; font-size: 0.95rem; background: var(--gold); color: #3b1c32; }
+  .scratch-box { position: relative; width: 100%; height: 190px; border-radius: 20px; overflow: hidden; background: linear-gradient(135deg, #ffe3ea, #fff0c9); }
+  .scratch-box .under { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 18px; font-size: 1.6rem; font-weight: 700; line-height: 1.25; color: #6d2848; text-align: center; }
+  #scratch { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; transition: opacity 0.8s ease; }
+  .ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 300px; margin: 0 auto; }
+  .ttt button { aspect-ratio: 1; border: 0; border-radius: 18px; background: var(--tile); font-size: 2.3rem; cursor: pointer; color: var(--ink); box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.08); }
+  .ttt button.win { background: var(--gold); }
+  .find { display: grid; gap: 8px; margin: 0 auto; max-width: 320px; }
+  .find button { aspect-ratio: 1; border: 0; border-radius: 14px; background: var(--tile); cursor: pointer; padding: 0; font-size: 1.5rem; }
+  .find button.shake { animation: shake 0.35s; }
+  @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .puzzle { position: relative; margin: 0 auto; border-radius: 18px; overflow: hidden; background: var(--tile); touch-action: manipulation; }
+  .puzzle .tile { position: absolute; border: 0; padding: 0; cursor: pointer; background-repeat: no-repeat; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.55); transition: left 0.18s ease, top 0.18s ease; }
+  .puzzle .tile.hole { opacity: 0; pointer-events: none; }
+  .puzzle.solved .tile { box-shadow: none; }
+  .puzzle.solved .tile.hole { opacity: 1; }
+
+  .balloon { position: fixed; bottom: -70px; z-index: 55; font-size: 2.1rem; pointer-events: none; animation: rise 6.5s ease-in forwards; }
+  @keyframes rise { to { transform: translate(var(--dx), -118vh); opacity: 0.2; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stars, .gate .big-cloud, .pin::after { animation: none; }
+    .world { transition: opacity 0.6s ease; transform: none; }
+    .balloon { display: none; }
+    .puzzle .tile { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky"></div>
+<div class="sky-warm"></div>
+<div class="stars"></div>
+<div class="sun"></div>
+
+<section class="gate" id="gate">
+  <div class="big-cloud" aria-hidden="true"></div>
+  <h1>You have a rough dayy, my Vandna zeee</h1>
+  <p>Don't worryyy, let's see the world we created.</p>
+  <button class="btn" id="enter">Let's go</button>
+</section>
+
+<div class="pill" id="pill">lighter: 0%</div>
+<button class="music" id="music" aria-label="Turn music on or off">♪</button>
+<div class="hint" id="hint">Drag to spin, tap a place</div>
+<div class="toast" id="toast"></div>
+
+<audio id="bgm" loop preload="auto" src="https://raw.githubusercontent.com/Adiirx/Myvandnazee/main/Mitski%20-%20My%20Love%20Mine%20All%20Mine%20(Official%20Lyric%20Video)%20(1).mp3"></audio>
+
+<div class="wrap">
+  <div class="world" id="world">
+    <div class="layer" id="pinLayer"></div>
+  </div>
+</div>
+
+<div class="place" id="place" inert>
+  <button class="close" id="close" aria-label="Close">✕</button>
+  <div class="stage" id="stage"></div>
+</div>
+
+<!-- games live here until a pin opens them -->
+<div id="games">
+  <div class="game" id="game-scratch">
+    <h3>Scratch to reveal</h3>
+    <div class="scratch-box" id="scratchBox">
+      <div class="under">You are my favourite personnn ❤️</div>
+      <canvas id="scratch"></canvas>
+    </div>
+    <p class="status" id="scratchMsg"></p>
+  </div>
+
+  <div class="game" id="game-ttt">
+    <h3>Tic-tac-toe</h3>
+    <div class="ttt" id="ttt"></div>
+    <p class="status" id="tttMsg">Your move, ❤️ goes first</p>
+    <button class="mini" id="tttReset">Play again</button>
+  </div>
+
+  <div class="game" id="game-find">
+    <h3>Find the heart</h3>
+    <div class="find" id="find"></div>
+    <p class="status" id="findMsg"></p>
+    <button class="mini" id="findReset" hidden>Play again</button>
+  </div>
+
+  <div class="game" id="game-puzzle">
+    <h3>Put our hug back together</h3>
+    <div class="puzzle" id="puzzle"></div>
+    <p class="status" id="puzzleMsg">Slide the pieces into place</p>
+    <button class="mini" id="puzzleReset">Shuffle again</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var gate = document.getElementById('gate');
+  var bgm = document.getElementById('bgm');
+  var musicBtn = document.getElementById('music');
+  var pill = document.getElementById('pill');
+  var hint = document.getElementById('hint');
+  var toastEl = document.getElementById('toast');
+  var world = document.getElementById('world');
+  var pinLayer = document.getElementById('pinLayer');
+  var place = document.getElementById('place');
+  var stage = document.getElementById('stage');
+  var gamesBox = document.getElementById('games');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var HUG_PHOTO = 'https://raw.githubusercontent.com/Adiirx/Myvandnazee/main/IMG_20261016_223523_552.jpg';
+  var BASE = 'https://raw.githubusercontent.com/Adiirx/Myvandnazee/main/';
+  var musicOn = true, started = false;
+  bgm.volume = 0.4;
+
+  /* =========================================================
+     CONTENT: every place on the world
+     ========================================================= */
+  var PINS = [
+    /* Just look at her */
+    { id: 'h1', ch: 'Just look at her', emoji: '🌸', lat: 28, lon: -35, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061642724.mp4',
+      text: `Look at her. Just look at herrr. I don't know how you manage to look this beautiful without even trying, Vandna zeee. Your smile changes my whole day, and your eyes carry a softness I can never describe properly, no matter how many times I try. You think you're just being yourself here, but to me this is the prettiest thing in the world. I could watch this on repeat for hours and still find a new reason to fall for you. My prettiest girlll.` },
+    { id: 'h2', ch: 'Just look at her', emoji: '🌷', lat: 30, lon: -12, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061658653.mp4',
+      text: `And thereee she is again, being unfairly adorable. The little things you do, the way you move, the way your face lights up, the tiny expressions you don't even notice, are exactly what I remember at random moments in my day. Beauty isn't only how you look, babyyy, it's the warmth that comes with it. You're pretty in a way that feels like home to me, and every time I watch this I feel so lucky that you're mine.` },
+    { id: 'h3', ch: 'Just look at her', emoji: '🌼', lat: 12, lon: -45, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061705194.mp4',
+      text: `Some people are beautiful in photos. You are beautiful in moments, and this one is proof. The way you carry yourself, that natural grace, the simple little charm you have without even realising it, makes my heart go quiet and loud at the same time. I wish you could see yourself through my eyes just once, Vandna zeee, because then you'd never doubt how stunning you are. Not on your best day, not on your worst. Always.` },
+    { id: 'h4', ch: 'Just look at her', emoji: '🌺', lat: 14, lon: -22, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061718417.mp4',
+      text: `This one is my weakness. Your cuteness in this video is honestly illegal, my babyyy. Your little reactions, your sweetness, that glow on your face, everything about it makes me smile like a fool in front of my phone. I know you get shy when I say all this, but I'll keep saying it anyway, because it's true. You are the prettiest girl I know, inside and out, and I never get tired of looking at you.` },
+    { id: 'h5', ch: 'Just look at her', emoji: '💐', lat: 12, lon: 0, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061728191.mp4',
+      text: `If I had to pick one reason to wake up smiling, it would be you. Watching you here, I feel peace and excitement together, which only you can do to me. You're beautiful, my sweetheart, in that soft, natural, effortless way that no filter could ever copy. Whatever kind of day you're having, please remember this: you are loved, you are adored, and you are the most beautiful part of my world. ❤️` },
+    { id: 'g-scratch', emoji: '✨', lat: -8, lon: -22, type: 'game', game: 'scratch' },
+
+    /* Our hands */
+    { id: 'hd1', ch: 'Our hands', emoji: '🤝', lat: 10, lon: 45, type: 'video', short: true, src: BASE + 'adiiisnotsocrazy_20261104_061735276.mp4',
+      text: `Your hand in mine looks like such a small thing, but this is where I feel the safest. It says everything words can't. I never want to let go, Vandna zeee. Every walk, every aimless road, every quiet moment, I want it to feel exactly like this.` },
+    { id: 'hd2', ch: 'Our hands', emoji: '🤍', lat: -6, lon: 68, type: 'video', short: true, src: BASE + 'adiiisnotsocrazy_20261104_061832683.mp4',
+      text: `And again, our hands fit like they were always meant to. Whenever the world feels heavy, I'll be right here holding on to you, tighter than you think. Promise, my babyyy.` },
+
+    /* That look */
+    { id: 'lk', ch: 'That look', emoji: '👀', lat: 24, lon: 100, type: 'video', src: BASE + 'adiiisnotsocrazy_20261104_061759551.mp4',
+      text: `Okay, pause. Look at how she's looking at me. That soft, adorable, slightly shy look that melts my whole heart. I don't know what's going on in that beautiful head of yours at this moment, but I hope it's something sweet, because it feels like you're looking at me like I'm someone special. And babyyy, you are the special one. That single look is enough to make me forget every bad day. I'd happily get lost in those eyes forever.` },
+    { id: 'g-ttt', emoji: '⭕', lat: -4, lon: 95, type: 'game', game: 'ttt' },
+
+    /* What you made for me */
+    { id: 'e1', ch: 'What you made for me', emoji: '🎬', lat: 14, lon: 140, type: 'video', short: true, src: BASE + 'adiiisnotsocrazy_20261104_061810816.mp4',
+      text: `You made this for me, and I still can't get over it. The effort, the creativity, the little details, all of it is so beautiful, just like you. Every time I watch it, I feel loved in the sweetest way. Thank you, my babyyy.` },
+    { id: 'e2', ch: 'What you made for me', emoji: '🎨', lat: -8, lon: 150, type: 'video', short: true, src: BASE + 'iluvgooningtomybf__20261104_061854809.mp4',
+      text: `And this one too. Your edits have so much of you in them, your style, your cuteness, your heart. They are some of the most beautiful things anyone has ever made for me, and I'll keep them forever, Vandna zeee.` },
+    { id: 'g-find', emoji: '🔍', lat: -30, lon: 125, type: 'game', game: 'find' },
+
+    /* Your hugs, my favourite place */
+    { id: 'u1', ch: 'Your hugs, my favourite place', emoji: '📸', lat: 22, lon: -120, type: 'photo', short: true, src: HUG_PHOTO,
+      text: `When you hug me, the whole world goes quiet. Nothing feels too heavy there.` },
+    { id: 'u2', ch: 'Your hugs, my favourite place', emoji: '🫂', lat: 4, lon: -135, type: 'video', src: BASE + 'VID_20261025_001521_246_bsl.mp4' },
+    { id: 'u3', ch: 'Your hugs, my favourite place', emoji: '🤗', lat: 4, lon: -105, type: 'video', short: true, src: BASE + 'adiiisnotsocrazy_20261104_061822925.mp4',
+      text: `If you need one right now, imagine me holding you tight. I'm right here, my love.` },
+    { id: 'g-puzzle', emoji: '🧩', lat: -24, lon: -120, type: 'game', game: 'puzzle' },
+
+    /* A letter for you */
+    { id: 'l1', ch: 'A letter for you', emoji: '💌', num: 1, lat: 28, lon: 170, type: 'letter', paras: [
+      { t: `My dearesttt Vandna zeeeeee, my sweetesttt girl, my babyyyy, I wishhh you could see yourself through my eyes just for onceee, because thennn you'd understand how incredibly precious you are to meee. You aren't just someone I loveee, you are someone who has become such an important part of my existenceee. You have a place in my heart that nobody could ever replaceee. I genuinely don't think words will ever be enough to explain what you mean to meee. You are the person whose happiness matters to me beyond words, whose smile can turn my entire day around, whose little gestures stay in my mind for hours, and whose presence makes even the most ordinary moments feel speciallll.` },
+      { t: `My loveeee, I want you to know that I don't just love the happy version of you. I love every little part of youuu. Your childish side, your stubbornness, your excitement when you talk about something you love, your beautiful smile, your silly little reactions, your overthinking, your quiet moments, even those days when you don't feel like yourself. I want to understand you in ways that even you sometimes struggle to understand yourself. I want to be someone you never have to pretend around, someone with whom you can be completely yourself without worrying about being judgeddd.` }
+    ] },
+    { id: 'l2', ch: 'A letter for you', emoji: '💌', num: 2, lat: 34, lon: 192, type: 'letter', paras: [
+      { t: `And babyyyy, there is so much I want to do for youuu. I want to make beautiful memories with you, take you to places you've always wanted to visit, hold your hand while we walk around aimlessly, listen to your endless talks, admire your pretty little smile, celebrate your smallest achievements, surprise you with things that make your eyes sparkle, and make ordinary days feel like something worth rememberinggg. I want to experience all those little things with you that we haven't experienced yettt. I want to grow with you, learn with you, travel with you, laugh with you, and build something beautiful together.` },
+      { t: `I promiseee I'll keep putting effort into usss. I'll keep learning how to love you better, how to understand you better, how to communicate instead of letting misunderstandings grow, and how to make you feel appreciated even on the most ordinary days. I knowww I'm not perfect, and sometimes I might make mistakes, but I'll never stop trying to become a better partner for youuu. I don't want my love to exist only in beautiful paragraphs; I want you to see it in my actions, my patience, my efforts, my consistency, and the little things I do for you every dayyy.` }
+    ] },
+    { id: 'l3', ch: 'A letter for you', emoji: '💌', num: 3, lat: 30, lon: 214, type: 'letter', paras: [
+      { t: `I want to be there when you're celebrating something wonderful, but I also want to be there when life feels a little too heavy. You don't have to carry every difficult feeling alone, my love. You can talk to me, cry with me, laugh with me, or simply sit quietly with me. I'll always want to understand what's going on inside that beautiful little mind of yours. And I'll never want you to feel that you have to earn my affection by being happy or perfect all the timeee.` },
+      { t: `You know whattt, my babyyy? If I could choose again, knowing everything about us, all our beautiful moments, all our disagreements, all the distance, and all the things we've yet to figure out, I'd still want to choose youuu. Not because everything is always going to be perfect, but because what we share is something I genuinely want to nurture and protecttt.` }
+    ] },
+    { id: 'l4', ch: 'A letter for you', emoji: '💌', num: 4, lat: 22, lon: 236, type: 'letter', paras: [
+      { t: `I want to give you the kind of love that makes you feel appreciated, respected, understood, beautiful, and safe to be yourself. I want to keep giving you reasons to smile, reasons to feel proud of yourself, and reasons to believe that beautiful things are still waiting for youuu.` },
+      { t: `You are not replaceable to me, my sweethearttt. You are not just another chapter of my life. You are someone whose presence has changed the way I look at love, happiness, and even the smallest things in life. I appreciate you more than I probably express, and I hope that with time, through everything I do, you never have to question how much you mean to meee.` }
+    ] },
+    { id: 'l5', ch: 'A letter for you', emoji: '💌', num: 5, lat: 10, lon: 256, type: 'letter', paras: [
+      { t: `I LOVE YOUUU SOOOOO MUCHHH, MY VANDNA ZEEE. More than these paragraphs could ever explain, more than I could put into words, and more than I could ever fit into a single momenttt. I want to keep choosing you, keep discovering new things about you, keep falling in love with your little details, and keep making this beautiful journey of ours worth rememberinggg.`, s: 1 },
+      { t: `YOU ARE MY FAVOURITE PERSONNN, MY PRETTIEST GIRLLLL, MY SWEETEST BLESSINGGG, AND SOMEONE I'LL ALWAYS BE GRATEFUL TO HAVE METTT. I hope I get to make you feel as loved as you make me feel, my everythinggg. ❤️✨`, s: 1 }
+    ] },
+
+    /* Finale */
+    { id: 'fin', emoji: '🔒', lat: 62, lon: 20, type: 'finale', src: BASE + '__20261104_060243253.mp4' }
+  ];
+
+  var LABELS = [
+    { text: 'Just look at her', lat: 42, lon: -22 },
+    { text: 'Our hands', lat: 24, lon: 56 },
+    { text: 'That look', lat: 38, lon: 100 },
+    { text: 'What you made for me', lat: 30, lon: 145 },
+    { text: 'Your hugs, my favourite place', lat: 38, lon: -120 },
+    { text: 'A letter for you', lat: 46, lon: 213 }
+  ];
+
+  /* island centres used to make land appear under every cluster */
+  var ISLANDS = [[20, -22], [2, 56], [14, 98], [2, 145], [6, -120], [26, 213], [62, 20], [-20, -22], [-18, 120], [-24, -120], [-4, 95]];
+
+  /* =========================================================
+     MUSIC + VIDEO HELPERS
+     ========================================================= */
+  function playMusic() { var p = bgm.play(); if (p && p.catch) p.catch(function () {}); }
+  function activeVideo() { var v = stage.querySelector('video'); return v && !v.paused && !v.ended; }
+  function resumeMusic() { if (musicOn && started && !activeVideo()) playMusic(); }
+  musicBtn.addEventListener('click', function () {
+    musicOn = !musicOn;
+    musicBtn.classList.toggle('off', !musicOn);
+    if (musicOn && !activeVideo()) playMusic(); else bgm.pause();
+  });
+  function hookVideo(v) {
+    v.addEventListener('play', function () { bgm.pause(); });
+    v.addEventListener('pause', resumeMusic);
+    v.addEventListener('ended', resumeMusic);
+  }
+
+  /* =========================================================
+     BALLOONS + TOAST
+     ========================================================= */
+  var emojis = ['🎈', '💗', '🎈', '✨', '💛'];
+  function burst(n) {
+    if (reduce) return;
+    for (var i = 0; i < n; i++) {
+      (function (i) {
+        setTimeout(function () {
+          var b = document.createElement('span');
+          b.className = 'balloon';
+          b.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          b.style.left = (8 + Math.random() * 84) + 'vw';
+          b.style.setProperty('--dx', ((Math.random() - 0.5) * 80) + 'px');
+          b.style.animationDuration = (5 + Math.random() * 3) + 's';
+          document.body.appendChild(b);
+          setTimeout(function () { b.remove(); }, 8500);
+        }, i * 200);
+      })(i);
+    }
+  }
+  var toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  /* =========================================================
+     PROGRESS: the world gets lighter as she visits places
+     ========================================================= */
+  var visited = {}, unlocked = false;
+  function required() { return PINS.filter(function (p) { return p.type !== 'game' && p.type !== 'finale'; }); }
+  function updateProgress() {
+    var count = Object.keys(visited).length;
+    var t = count / PINS.length;
+    root.style.setProperty('--t', t.toFixed(3));
+    pill.textContent = 'lighter: ' + Math.round(t * 100) + '%';
+    var left = required().filter(function (p) { return !visited[p.id]; }).length;
+    if (!unlocked && left === 0) {
+      unlocked = true;
+      var f = PINS[PINS.length - 1];
+      f.el.classList.remove('locked');
+      f.el.firstChild.nodeValue = '🌟';
+      toast('Something new appeared 🌟');
+      burst(10);
+    }
+  }
+  function leftCount() { return required().filter(function (p) { return !visited[p.id]; }).length; }
+
+  /* =========================================================
+     PINS (DOM) 
+     ========================================================= */
+  PINS.forEach(function (p) {
+    var b = document.createElement('button');
+    b.className = 'pin' + (p.type === 'game' ? ' game' : '') + (p.type === 'finale' ? ' locked' : '');
+    b.appendChild(document.createTextNode(p.emoji));
+    if (p.num) { var n = document.createElement('i'); n.className = 'num'; n.textContent = p.num; b.appendChild(n); }
+    b.setAttribute('aria-label', p.ch || p.game || 'a place');
+    b.dataset.id = p.id;
+    pinLayer.appendChild(b);
+    p.el = b;
+  });
+  var tags = LABELS.map(function (l) {
+    var d = document.createElement('div'); d.className = 'tag'; d.textContent = l.text; pinLayer.appendChild(d); l.el = d; return l;
+  });
+
+  /* =========================================================
+     OPENING A PLACE
+     ========================================================= */
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  var hooks = {};
+  function renderPlace(p) {
+    stage.innerHTML = '';
+    if (p.type === 'video' || p.type === 'finale') {
+      var ring = el('div', 'ring');
+      var v = document.createElement('video');
+      v.className = 'frame' + ((p.type === 'finale' || !p.text) ? ' tall' : '');
+      v.controls = true; v.setAttribute('playsinline', ''); v.preload = 'metadata';
+      v.src = p.src + '#t=0.1';
+      hookVideo(v); ring.appendChild(v); stage.appendChild(ring);
+      if (p.type === 'finale') stage.appendChild(el('p', 'finale-text', 'apka rasta mai chroun nahh'));
+      else if (p.text) stage.appendChild(el('p', 'words' + (p.short ? ' short' : ''), p.text));
+    } else if (p.type === 'photo') {
+      var r2 = el('div', 'ring');
+      var im = document.createElement('img'); im.className = 'frame'; im.alt = 'A hug with Vandna zeee'; im.src = p.src;
+      r2.appendChild(im); stage.appendChild(r2);
+      stage.appendChild(el('p', 'words short', p.text));
+    } else if (p.type === 'letter') {
+      var paper = el('div', 'paper');
+      p.paras.forEach(function (x) { paper.appendChild(el('p', x.s ? 'shout' : '', x.t)); });
+      stage.appendChild(paper);
+    } else if (p.type === 'game') {
+      var g = document.getElementById('game-' + p.game);
+      stage.appendChild(g);
+      if (hooks[p.game]) hooks[p.game]();
+    }
+    stage.scrollTop = 0;
+  }
+  function openPlace(p) {
+    renderPlace(p);
+    place.inert = false;
+    place.classList.add('open');
+    hint.classList.remove('show');
+    if (!visited[p.id]) { visited[p.id] = true; p.el.classList.add('seen'); updateProgress(); }
+    if (p.type === 'finale') burst(14);
+  }
+  function closePlace() {
+    place.classList.remove('open');
+    place.inert = true;
+    var v = stage.querySelector('video');
+    if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+    var g = stage.querySelector('.game');
+    if (g) gamesBox.appendChild(g);
+    setTimeout(function () { if (!place.classList.contains('open')) stage.innerHTML = ''; }, 450);
+    resumeMusic();
+    lastTouch = performance.now();
+  }
+  document.getElementById('close').addEventListener('click', closePlace);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && place.classList.contains('open')) closePlace(); });
+
+  function tapPin(p) {
+    if (p.type === 'finale' && !unlocked) {
+      toast('Visit every memory first 💗 (' + leftCount() + ' left)');
+      return;
+    }
+    focusTo(p.lat, p.lon, function () { openPlace(p); });
+  }
+
+  /* =========================================================
+     THE EARTH
+     ========================================================= */
+  var S = 300, scene, camera, renderer, group, clouds, lastTouch = 0, anim = null, texReady = false, wantStart = false, vel = { x: 0, y: 0 };
+  var D2R = Math.PI / 180;
+
+  function sizeWorld() {
+    S = Math.floor(Math.min(window.innerWidth * 0.98, window.innerHeight * 0.74));
+    world.style.width = S + 'px'; world.style.height = S + 'px';
+    if (renderer) {
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+      renderer.setSize(S, S, false);
+    }
+  }
+
+  /* procedural noise on the sphere so the map has no seams */
+  function hash(x, y, z) { var h = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return h - Math.floor(h); }
+  function vnoise(x, y, z) {
+    var xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    var xf = x - xi, yf = y - yi, zf = z - zi;
+    var u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+    function l(a, b, t) { return a + (b - a) * t; }
+    return l(
+      l(l(hash(xi, yi, zi), hash(xi + 1, yi, zi), u), l(hash(xi, yi + 1, zi), hash(xi + 1, yi + 1, zi), u), v),
+      l(l(hash(xi, yi, zi + 1), hash(xi + 1, yi, zi + 1), u), l(hash(xi, yi + 1, zi + 1), hash(xi + 1, yi + 1, zi + 1), u), v), w);
+  }
+  function fbm(x, y, z, oct) { var a = 0, amp = 0.5, f = 1; for (var o = 0; o < oct; o++) { a += amp * vnoise(x * f, y * f, z * f); f *= 2; amp *= 0.5; } return a; }
+  function mix(c1, c2, t) { t = Math.max(0, Math.min(1, t)); return [c1[0] + (c2[0] - c1[0]) * t, c1[1] + (c2[1] - c1[1]) * t, c1[2] + (c2[2] - c1[2]) * t]; }
+
+  function makeEarthTexture() {
+    var W = 768, H = 384, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d'), img = ctx.createImageData(W, H), d = img.data;
+    var centres = ISLANDS.map(function (c) { var la = c[0] * D2R, lo = c[1] * D2R; return [Math.cos(la) * Math.sin(lo), Math.sin(la), Math.cos(la) * Math.cos(lo)]; });
+    var deep = [16, 36, 96], shallow = [70, 190, 214], sand = [248, 226, 186], low = [150, 224, 176], mid = [250, 208, 160], high = [244, 160, 186], snow = [255, 250, 250];
+    for (var y = 0; y < H; y++) {
+      var lat = (0.5 - (y + 0.5) / H) * Math.PI, cl = Math.cos(lat), sl = Math.sin(lat);
+      for (var x = 0; x < W; x++) {
+        var lon = ((x + 0.5) / W) * 2 * Math.PI - Math.PI;
+        var px = cl * Math.sin(lon), py = sl, pz = cl * Math.cos(lon);
+        var h = fbm(px * 2.2 + 5, py * 2.2 + 5, pz * 2.2 + 5, 4);
+        var bump = 0;
+        for (var c = 0; c < centres.length; c++) {
+          var dot = px * centres[c][0] + py * centres[c][1] + pz * centres[c][2];
+          var ang = Math.acos(Math.max(-1, Math.min(1, dot)));
+          var b = 0.42 * Math.exp(-Math.pow(ang / 0.34, 2));
+          if (b > bump) bump = b;
+        }
+        h += bump;
+        var col, th = 0.58;
+        if (h < th) { col = mix(deep, shallow, 1 - (th - h) * 5.5); }
+        else {
+          var e = h - th;
+          if (e < 0.022) col = sand;
+          else if (e < 0.12) col = mix(low, mid, (e - 0.022) / 0.1);
+          else col = mix(mid, high, (e - 0.12) / 0.16);
+        }
+        var polar = Math.abs(lat) / (Math.PI / 2);
+        if (polar > 0.8) col = mix(col, snow, (polar - 0.8) / 0.12);
+        var i = (y * W + x) * 4; d[i] = col[0]; d[i + 1] = col[1]; d[i + 2] = col[2]; d[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return cv;
+  }
+  function makeCloudTexture() {
+    var W = 512, H = 256, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d'), img = ctx.createImageData(W, H), d = img.data;
+    for (var y = 0; y < H; y++) {
+      var lat = (0.5 - (y + 0.5) / H) * Math.PI, cl = Math.cos(lat), sl = Math.sin(lat);
+      for (var x = 0; x < W; x++) {
+        var lon = ((x + 0.5) / W) * 2 * Math.PI - Math.PI;
+        var n = fbm(cl * Math.sin(lon) * 3.4 + 40, sl * 3.4 + 40, cl * Math.cos(lon) * 3.4 + 40, 4);
+        var a = Math.max(0, Math.min(1, (n - 0.5) / 0.22));
+        var i = (y * W + x) * 4; d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = a * 215;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return cv;
+  }
+
+  function buildScene() {
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setClearColor(0x000000, 0);
+      world.insertBefore(renderer.domElement, pinLayer);
+      sizeWorld();
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
+      camera.position.set(0, 0, 3.7);
+      scene.add(new THREE.AmbientLight(0x9aa0d0, 0.75));
+      var sunLight = new THREE.DirectionalLight(0xfff0dc, 1.35); sunLight.position.set(-2.2, 1.6, 3); scene.add(sunLight);
+      group = new THREE.Group(); scene.add(group);
+      var earthTex = new THREE.CanvasTexture(makeEarthTexture()); earthTex.anisotropy = 4;
+      var earth = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), new THREE.MeshStandardMaterial({ map: earthTex, roughness: 0.92, metalness: 0, emissive: 0x2a1c3a, emissiveIntensity: 0.55 }));
+      group.add(earth);
+      var cloudTex = new THREE.CanvasTexture(makeCloudTexture());
+      clouds = new THREE.Mesh(new THREE.SphereGeometry(1.018, 48, 36), new THREE.MeshStandardMaterial({ map: cloudTex, transparent: true, depthWrite: false, roughness: 1 }));
+      group.add(clouds);
+      var glow = new THREE.Mesh(new THREE.SphereGeometry(1.09, 48, 36), new THREE.MeshBasicMaterial({ color: 0xa9c8ff, transparent: true, opacity: 0.16, side: THREE.BackSide }));
+      scene.add(glow);
+      group.rotation.x = 0.3; group.rotation.y = 0.2;
+      PINS.forEach(function (p) {
+        var la = p.lat * D2R, lo = p.lon * D2R;
+        p.vec = new THREE.Vector3(Math.cos(la) * Math.sin(lo), Math.sin(la), Math.cos(la) * Math.cos(lo)).multiplyScalar(1.04);
+      });
+      LABELS.forEach(function (l) {
+        var la = l.lat * D2R, lo = l.lon * D2R;
+        l.vec = new THREE.Vector3(Math.cos(la) * Math.sin(lo), Math.sin(la), Math.cos(la) * Math.cos(lo)).multiplyScalar(1.1);
+      });
+      return true;
+    } catch (err) { return false; }
+  }
+
+  var pinsOn = false, tmp = null;
+  function project(vec) {
+    tmp.copy(vec); group.localToWorld(tmp);
+    var z = tmp.z, len2 = tmp.lengthSq();
+    var vis = (z * 3.7 - len2) / (3.7 * Math.sqrt(len2));
+    tmp.project(camera);
+    return { x: (tmp.x * 0.5 + 0.5) * S, y: (-tmp.y * 0.5 + 0.5) * S, vis: vis };
+  }
+  function placeAll() {
+    group.updateMatrixWorld(true);
+    PINS.forEach(function (p) {
+      var r = project(p.vec);
+      var o = pinsOn ? Math.max(0, Math.min(1, (r.vis - 0.04) / 0.14)) : 0;
+      var s = 0.72 + 0.28 * Math.max(0, Math.min(1, r.vis / 0.5));
+      p.el.style.transform = 'translate(' + r.x.toFixed(1) + 'px,' + r.y.toFixed(1) + 'px) translate(-50%,-50%) scale(' + s.toFixed(2) + ')';
+      p.el.style.opacity = o.toFixed(2);
+      p.el.style.pointerEvents = o > 0.6 ? 'auto' : 'none';
+    });
+    tags.forEach(function (l) {
+      var r = project(l.vec);
+      var o = pinsOn ? Math.max(0, Math.min(1, (r.vis - 0.1) / 0.18)) : 0;
+      l.el.style.transform = 'translate(' + r.x.toFixed(1) + 'px,' + r.y.toFixed(1) + 'px) translate(-50%,-50%)';
+      l.el.style.opacity = o.toFixed(2);
+    });
+  }
+
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  function focusTo(lat, lon, done) {
+    if (!group) { done(); return; }
+    var tx = Math.max(-1.1, Math.min(1.1, lat * D2R)), ty = -lon * D2R;
+    var sy = group.rotation.y, dy = (ty - sy) % (2 * Math.PI);
+    if (dy > Math.PI) dy -= 2 * Math.PI; if (dy < -Math.PI) dy += 2 * Math.PI;
+    anim = { sx: group.rotation.x, sy: sy, tx: tx, ty: sy + dy, t0: performance.now(), dur: reduce ? 1 : 750, done: done };
+    vel.x = vel.y = 0;
+  }
+
+  var prev = 0;
+  function tick(now) {
+    requestAnimationFrame(tick);
+    var dt = Math.min(50, now - (prev || now)); prev = now;
+    if (anim) {
+      var k = Math.min(1, (now - anim.t0) / anim.dur), e = ease(k);
+      group.rotation.x = anim.sx + (anim.tx - anim.sx) * e;
+      group.rotation.y = anim.sy + (anim.ty - anim.sy) * e;
+      if (k >= 1) { var cb = anim.done; anim = null; cb(); }
+    } else if (!dragging) {
+      group.rotation.y += vel.y; group.rotation.x = Math.max(-1.1, Math.min(1.1, group.rotation.x + vel.x));
+      vel.y *= 0.95; vel.x *= 0.95;
+      if (!place.classList.contains('open') && now - lastTouch > 1800) group.rotation.y += 0.00012 * dt;
+    }
+    clouds.rotation.y += 0.00003 * dt;
+    placeAll();
+    renderer.render(scene, camera);
+  }
+
+  /* ---- dragging the world, and tapping pins ---- */
+  var dragging = false, downX = 0, downY = 0, lastX = 0, lastY = 0, downPin = null, moved = 0;
+  world.addEventListener('pointerdown', function (e) {
+    if (!started || anim || place.classList.contains('open')) return;
+    dragging = true; moved = 0; downX = lastX = e.clientX; downY = lastY = e.clientY;
+    downPin = e.target.closest ? e.target.closest('.pin') : null;
+    vel.x = vel.y = 0; lastTouch = performance.now();
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved = Math.max(moved, Math.hypot(e.clientX - downX, e.clientY - downY));
+    if (moved > 8 && group) {
+      group.rotation.y += dx * 0.0075;
+      group.rotation.x = Math.max(-1.1, Math.min(1.1, group.rotation.x + dy * 0.0075));
+      vel.y = dx * 0.0075 * 0.6; vel.x = dy * 0.0075 * 0.6;
+    }
+    lastTouch = performance.now();
+  });
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false; lastTouch = performance.now();
+    if (moved <= 8 && downPin) {
+      var p = PINS.filter(function (x) { return x.el === downPin; })[0];
+      if (p) { vel.x = vel.y = 0; tapPin(p); }
+    }
+    downPin = null;
+  }
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  /* flat fallback if WebGL or three.js is unavailable */
+  function flatMode() {
+    world.classList.add('flat');
+    PINS.forEach(function (p) {
+      p.el.addEventListener('click', function () { if (p.type === 'finale' && !unlocked) { toast('Visit every memory first 💗 (' + leftCount() + ' left)'); return; } openPlace(p); });
+    });
+    tags.forEach(function (l) { l.el.remove(); });
+  }
+
+  /* =========================================================
+     START
+     ========================================================= */
+  function startWorld() {
+    started = true;
+    musicOn = true; musicBtn.classList.remove('off'); playMusic();
+    gate.classList.add('gone');
+    sizeWorld();
+    requestAnimationFrame(function () { world.classList.add('in'); });
+    if (group) {
+      tmp = new THREE.Vector3();
+      requestAnimationFrame(tick);
+      setTimeout(function () { pinsOn = true; hint.classList.add('show'); }, 2300);
+      setTimeout(function () { hint.classList.remove('show'); }, 9500);
+    } else {
+      hint.classList.remove('show');
+    }
+  }
+  document.getElementById('enter').addEventListener('click', function () {
+    if (started) return;
+    if (texReady) startWorld(); else wantStart = true;
+  });
+  window.addEventListener('resize', function () { sizeWorld(); });
+
+  setTimeout(function () {
+    var ok = window.THREE && buildScene();
+    if (!ok) { flatMode(); }
+    texReady = true;
+    if (wantStart) startWorld();
+  }, 60);
+
+  /* =========================================================
+     GAMES
+     ========================================================= */
+  /* --- scratch card --- */
+  (function () {
+    var box = document.getElementById('scratchBox'), cvs = document.getElementById('scratch'), msg = document.getElementById('scratchMsg');
+    var ctx = cvs.getContext('2d'), drawing = false, last = null, moves = 0, done = false;
+    function paint() {
+      var w = box.clientWidth, h = box.clientHeight;
+      if (!w || !h) return;
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      cvs.width = w * dpr; cvs.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      var g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, '#b8b2c8'); g.addColorStop(0.5, '#ecdca9'); g.addColorStop(1, '#c9a0b6');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(70, 30, 55, 0.6)'; ctx.font = '700 24px Georgia, serif'; ctx.textAlign = 'center';
+      ctx.fillText('scratch here', w / 2, h / 2 + 8);
+    }
+    function pos(e) { var r = cvs.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    function cleared() {
+      var w = cvs.width, h = cvs.height, d = ctx.getImageData(0, 0, w, h).data, c = 0, total = 0, step = 16;
+      for (var y = 0; y < h; y += step) for (var x = 0; x < w; x += step) { total++; if (d[(y * w + x) * 4 + 3] < 40) c++; }
+      return c / total;
+    }
+    function scratch(p) {
+      ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 44; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(last ? last.x : p.x, last ? last.y : p.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p;
+      if (++moves % 6 === 0 && !done && cleared() > 0.45) {
+        done = true; cvs.style.opacity = '0'; cvs.style.pointerEvents = 'none'; msg.textContent = 'You found it 💗'; burst(10);
+      }
+    }
+    cvs.addEventListener('pointerdown', function (e) { drawing = true; last = null; cvs.setPointerCapture(e.pointerId); scratch(pos(e)); });
+    cvs.addEventListener('pointermove', function (e) { if (drawing && !done) scratch(pos(e)); });
+    ['pointerup', 'pointercancel'].forEach(function (ev) { cvs.addEventListener(ev, function () { drawing = false; last = null; }); });
+    hooks.scratch = function () { if (!done) paint(); };
+  })();
+
+  /* --- tic-tac-toe (she always wins) --- */
+  (function () {
+    var el = document.getElementById('ttt'), msg = document.getElementById('tttMsg');
+    var lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    var board, over, cells = [];
+    for (var i = 0; i < 9; i++) {
+      (function (i) {
+        var b = document.createElement('button'); b.setAttribute('aria-label', 'cell ' + (i + 1));
+        b.addEventListener('click', function () { play(i); }); el.appendChild(b); cells.push(b);
+      })(i);
+    }
+    function render() { cells.forEach(function (b, i) { b.textContent = board[i] === 'H' ? '❤️' : board[i] === 'C' ? '🌙' : ''; }); }
+    function lineOf(p) { for (var k = 0; k < lines.length; k++) { if (lines[k].every(function (i) { return board[i] === p; })) return lines[k]; } return null; }
+    function reset() { board = Array(9).fill(''); over = false; cells.forEach(function (b) { b.classList.remove('win'); }); msg.textContent = 'Your move, ❤️ goes first'; render(); }
+    function finish(l, text) { over = true; msg.textContent = text; if (l) l.forEach(function (i) { cells[i].classList.add('win'); }); }
+    function play(i) {
+      if (over || board[i]) return;
+      board[i] = 'H'; render();
+      var w = lineOf('H');
+      if (w) { finish(w, 'You win! Of course you did 😌'); burst(10); return; }
+      setTimeout(cpu, 420);
+    }
+    function cpu() {
+      if (over) return;
+      var empty = []; board.forEach(function (v, i) { if (!v) empty.push(i); });
+      if (!empty.length) { finish(null, 'A tie? Let me play worse this time 😌'); return; }
+      var best = null, bestScore = 99;
+      empty.forEach(function (i) {
+        var score = 0;
+        lines.forEach(function (l) {
+          if (l.indexOf(i) === -1) return;
+          var h = l.filter(function (j) { return board[j] === 'H'; }).length;
+          var c = l.filter(function (j) { return board[j] === 'C'; }).length;
+          if (h > 0 && c === 0) score += h * 3;
+        });
+        board[i] = 'C'; if (lineOf('C')) score += 50; board[i] = '';
+        score += Math.random();
+        if (score < bestScore) { bestScore = score; best = i; }
+      });
+      board[best] = 'C'; render();
+      if (!board.some(function (v) { return !v; })) finish(null, 'A tie? Let me play worse this time 😌');
+    }
+    document.getElementById('tttReset').addEventListener('click', reset);
+    reset();
+  })();
+
+  /* --- find the heart --- */
+  (function () {
+    var grid = document.getElementById('find'), msg = document.getElementById('findMsg'), again = document.getElementById('findReset');
+    var sizes = [3, 4, 5], round = 0;
+    function build() {
+      var n = sizes[round], target = Math.floor(Math.random() * n * n);
+      grid.style.gridTemplateColumns = 'repeat(' + n + ', 1fr)'; grid.innerHTML = '';
+      msg.textContent = 'Round ' + (round + 1) + ' of ' + sizes.length;
+      for (var i = 0; i < n * n; i++) {
+        (function (i) {
+          var b = document.createElement('button'); b.textContent = i === target ? '💗' : '🤍'; b.setAttribute('aria-label', 'heart ' + (i + 1));
+          b.addEventListener('click', function () {
+            if (i === target) {
+              round++;
+              if (round >= sizes.length) { grid.innerHTML = ''; msg.textContent = 'You found it. My heart was always with you ❤️'; again.hidden = false; burst(12); }
+              else { burst(3); build(); }
+            } else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+          });
+          grid.appendChild(b);
+        })(i);
+      }
+    }
+    again.addEventListener('click', function () { round = 0; again.hidden = true; build(); });
+    build();
+  })();
+
+  /* --- sliding photo puzzle --- */
+  (function () {
+    var board = document.getElementById('puzzle'), msg = document.getElementById('puzzleMsg');
+    var L = Math.min(window.innerWidth * 0.8, 320), tile = L / 3;
+    var iw = 1, ih = 1, order = [], tiles = [], solved = false;
+    board.style.width = board.style.height = L + 'px';
+    for (var v = 0; v < 9; v++) {
+      (function (v) {
+        var t = document.createElement('button'); t.className = 'tile' + (v === 8 ? ' hole' : '');
+        t.style.width = t.style.height = tile + 'px'; t.setAttribute('aria-label', 'piece ' + (v + 1));
+        t.addEventListener('click', function () { move(order.indexOf(v)); }); board.appendChild(t); tiles.push(t);
+      })(v);
+    }
+    function style() {
+      var ratio = iw / ih, sw = ratio >= 1 ? 3 * tile * ratio : 3 * tile, sh = ratio >= 1 ? 3 * tile : 3 * tile / ratio;
+      var ox = (sw - 3 * tile) / 2, oy = (sh - 3 * tile) / 2;
+      tiles.forEach(function (t, v) {
+        t.style.backgroundImage = 'url("' + HUG_PHOTO + '")'; t.style.backgroundSize = sw + 'px ' + sh + 'px';
+        t.style.backgroundPosition = (-((v % 3) * tile + ox)) + 'px ' + (-(Math.floor(v / 3) * tile + oy)) + 'px';
+      });
+    }
+    function placeTiles() { order.forEach(function (v, pos) { tiles[v].style.left = (pos % 3) * tile + 'px'; tiles[v].style.top = Math.floor(pos / 3) * tile + 'px'; }); }
+    function neighbours(p) { var r = Math.floor(p / 3), c = p % 3, out = []; if (r > 0) out.push(p - 3); if (r < 2) out.push(p + 3); if (c > 0) out.push(p - 1); if (c < 2) out.push(p + 1); return out; }
+    function move(p) {
+      if (solved) return;
+      var e = order.indexOf(8); if (neighbours(e).indexOf(p) === -1) return;
+      order[e] = order[p]; order[p] = 8; placeTiles();
+      if (order.every(function (v, i) { return v === i; })) { solved = true; board.classList.add('solved'); msg.textContent = 'Our hug, back together ❤️'; burst(12); }
+    }
+    function shuffle() {
+      order = [0, 1, 2, 3, 4, 5, 6, 7, 8]; solved = false; board.classList.remove('solved'); msg.textContent = 'Slide the pieces into place';
+      var e = 8, prevPos = -1;
+      for (var i = 0; i < 160; i++) {
+        var opts = neighbours(e).filter(function (x) { return x !== prevPos; });
+        var p = opts[Math.floor(Math.random() * opts.length)];
+        order[e] = order[p]; order[p] = 8; prevPos = e; e = p;
+      }
+      if (order.every(function (v, i) { return v === i; })) return shuffle();
+      placeTiles();
+    }
+    var img = new Image();
+    img.onload = function () { iw = img.naturalWidth || 1; ih = img.naturalHeight || 1; style(); };
+    img.src = HUG_PHOTO;
+    style(); shuffle();
+    document.getElementById('puzzleReset').addEventListener('click', shuffle);
+  })();
+
+})();
+</script>
+</body>
+</html>
